@@ -1,0 +1,25 @@
+{
+  "name": "SquidDev",
+  "version": "0.1.0",
+  "authors": [
+    "SquidDev <bonzoweb@hotmail.co.uk>"
+  ],
+  "description": "My website",
+  "homepage": "http://bonzodandd.co.uk",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "metro-bootstrap": "TalksLab/metro-bootstrap",
+    "MirrorMark": "squiddev/MirrorMark#*"
+  },
+  "devDependencies": {},
+  "resolutions": {
+    "font-awesome": "~4.3.0"
+  }
+}

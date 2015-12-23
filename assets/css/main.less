@@ -1,0 +1,76 @@
+@import "metro-bootstrap/app/less/metro-bootstrap.less";
+@import "font-awesome/less/font-awesome.less";
+
+@import "navbar.less";
+
+@footer-height: 60px;
+@generic-padding: 15px;
+
+html {
+	position: relative;
+	min-height: 100%;
+}
+body {
+	/* Margin bottom by footer height */
+	margin-bottom: @footer-height;
+}
+footer {
+	position: absolute;
+	bottom: 0;
+	width: 100%;
+	height: @footer-height;
+	background-color: #f5f5f5;
+}
+body > .container {
+	padding: 60px @generic-padding 0;
+}
+footer > .container {
+	padding-right: @generic-padding;
+	padding-left: @generic-padding;
+	margin-top:20px;
+}
+
+.list-group-item.active {
+	margin-left: -2px;
+}
+
+pre.code-block {
+	background: #FFF;
+	border: none;
+}
+
+[content-editable],
+[content-editable]:focus {
+	outline: 0px solid transparent;
+}
+
+.article img {
+	max-height: 400px;
+	max-width: 800px;
+	margin-left: auto;
+	margin-right: auto;
+	display:block;
+}
+
+.article-small img {
+	max-height: 200px;
+	max-width: 400px;
+}
+
+h1, h2, h3, h4 {
+	&:first-child {
+		margin-top: 0px;
+	}
+
+	small a {
+		color: inherit;
+	}
+}
+
+img.pull-left {
+	margin-right: 10px;
+}
+
+img.pull-right {
+	margin-left: 10px;
+}

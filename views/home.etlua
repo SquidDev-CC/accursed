@@ -1,0 +1,13 @@
+<div class="rows">
+	<div class="page-header">
+		<h1>Hello</h1>
+	</div>
+	<div class="col-md-7 col-sm-12">
+		<div class="introduction">
+			<p class="lead">
+				I'm a programmer. I spend a lot of the day writing code, thinking about code, reading about code and the like.
+				That isn't to say that I don't do other things, it is just more that I love what I do.
+			</p>
+		</div>
+	</div>
+</div>

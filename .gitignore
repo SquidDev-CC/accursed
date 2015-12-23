@@ -1,0 +1,13 @@
+client_body_temp/
+fastcgi_temp/
+logs/
+nginx.conf.compiled
+proxy_temp/
+scgi_temp/
+uwsgi_temp/
+cache/
+*.lua
+.moonbox/
+static/
+bower_components/
+db.json
