@@ -1,23 +1,23 @@
-var gulp = require('gulp'),
-	del = require('del'),                  // Used to clean files
-	rename = require('gulp-rename'),       // Used to rename *.* to *.min.*
-	runSequence = require('run-sequence'), // Don't release files before cleaning
+var gulp = require('gulp');
+var del = require('del'); // Used to clean files
+var rename = require('gulp-rename'); // Used to rename *.* to *.min.*
+var runSequence = require('run-sequence'); // Don't release files before cleaning
 
 	// Javascript
-	concat = require('gulp-concat'),
-	uglify = require('gulp-uglify'),
+var concat = require('gulp-concat');
+var uglify = require('gulp-uglify');
 
 	// Stylesnp
-	less = require('gulp-less'),
-	minifycss = require('gulp-minify-css');
+var less = require('gulp-less');
+var cssmin = require('gulp-cssmin');
 
 var
 	SRC = './assets/',
-	DIST = './static/',
+	DIST = './wwwroot/static/',
 	BOWER = './bower_components/';
 
 gulp.task('clean', function (cb) {
-	del.sync(DIST + "**/*", cb);
+	del.sync([DIST + "**/*", "!" + DIST + "web.config"], cb);
 });
 
 gulp.task('copy:fonts', function() {
@@ -42,7 +42,7 @@ gulp.task('css:less', ['copy:metro'], function() {
 
 gulp.task('css:minify', ['css:less'], function() {
 	return gulp.src(DIST + 'main.css')
-		.pipe(minifycss())
+		.pipe(cssmin())
 		.pipe(rename({ suffix: '.min' }))
 		.pipe(gulp.dest(DIST));
 });

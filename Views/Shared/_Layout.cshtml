@@ -3,9 +3,14 @@
 	<head>
 		<meta charset="utf-8">
 
-		<title><%= title %></title>
-		<link rel="stylesheet" href="/static/main.css" />
-		<% content_for("header") %>
+		<title>@ViewData["Title"] | Accursed</title>
+
+		<environment names="Development">
+			<link rel="stylesheet" href="~/static/main.css" />
+		</environment>
+		<environment names="Production">
+			<link rel="stylesheet" href="~/static/main.min.css" asp-append-version="true" />
+		</environment>
 
 		<meta name="viewport" content="width=device-width, initial-scale=1.0">
 		<meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -24,13 +29,13 @@
 					</span>
 				</div>
 				<div class="navbar-collapse collapse">
-					<% render("views.navigation") %>
+					@await Html.PartialAsync("_Navigation")
 				</div>
 			</div>
 		</div>
 
 		<div class="container">
-			<% content_for("inner") %>
+			@RenderBody()
 		</div>
 
 		<footer>
@@ -39,7 +44,12 @@
 			</div>
 		</footer>
 
-		<script type="text/javascript" src="/static/main.js"></script>
-		<% content_for("footer") %>
+		<environment names="Development">
+			<script type="text/javascript" src="/static/main.js"></script>
+		</environment>
+		<environment names="Production">
+			<script type="text/javascript" src="/static/main.min.js" asp-append-version="true"></script>
+		</environment>
+		@RenderSection("scripts", required: false)
 	</body>
 </html>

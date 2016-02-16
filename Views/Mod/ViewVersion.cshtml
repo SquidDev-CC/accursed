@@ -1,0 +1,24 @@
+@model ModVersion
+@using Accursed.Controllers
+@{
+	ViewData["Title"] = @Model.FancyName;
+}
+
+<div class="page-header">
+	<h1>@ViewData["Title"]</h1>
+</div>
+
+<table class="table">
+	<tr>
+		<th>Name</th>
+	</tr>
+
+    @foreach(var file in Model.Files)
+    {
+        <tr>
+            <td>
+                <a href="@ModController.FormatDownload(Model.Mod, file.DownloadId)">@file.Name</a>
+            </td>
+        </tr>
+    }
+</table>

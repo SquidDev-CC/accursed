@@ -15,11 +15,7 @@
     "tests"
   ],
   "dependencies": {
-    "metro-bootstrap": "TalksLab/metro-bootstrap",
-    "MirrorMark": "squiddev/MirrorMark#*"
+    "metro-bootstrap": "TalksLab/metro-bootstrap"
   },
-  "devDependencies": {},
-  "resolutions": {
-    "font-awesome": "~4.3.0"
-  }
+  "devDependencies": {}
 }

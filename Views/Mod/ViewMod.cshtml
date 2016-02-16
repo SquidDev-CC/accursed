@@ -1,0 +1,28 @@
+@model Mod
+@using Accursed.Controllers
+@{
+	ViewData["Title"] = @Model.Name;
+}
+
+<div class="page-header">
+	<h1>@ViewData["Title"]</h1>
+</div>
+
+<table class="table">
+	<tr>
+		<th>Version</th>
+		<th>Game Version</th>
+	</tr>
+
+	@foreach(var version in Model.Versions)
+	{
+		<tr>
+			<td>
+				<a href="@ModController.FormatDownload(Model, version.DownloadId)">@version.FancyName</a>
+			</td>
+			<td>
+				@version.MCVersion
+			</td>
+		</tr>
+	}
+</table>
