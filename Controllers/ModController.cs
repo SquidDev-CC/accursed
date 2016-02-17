@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Net;
 using Accursed.Models;
 using Accursed.Services;
 using Microsoft.AspNet.Mvc;
@@ -8,7 +9,6 @@ using Microsoft.Data.Entity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
-using ModVersion = Accursed.Models.ModVersion;
 
 namespace Accursed.Controllers
 {
@@ -20,6 +20,8 @@ namespace Accursed.Controllers
         private readonly IMemoryCache cache;
         private readonly ILogger logger;
 
+        private readonly MemoryCacheEntryOptions cacheOptions;
+
         public ModController(
             IModFetcher fetcher,
             IMemoryCache cache,
@@ -29,11 +31,14 @@ namespace Accursed.Controllers
         )
         {
             this.fetcher = fetcher;
-            this.cache = cache; // TODO: Implement caching
+            this.cache = cache;
             this.context = context;
             this.logger = loggerFactory.CreateLogger<ModController>();
 
             this.versionRefresh = TimeSpan.Parse(configuration["VersionRefreshTime"] ?? "00:30");
+            this.cacheOptions = new MemoryCacheEntryOptions()
+                    .SetSlidingExpiration(TimeSpan.FromMinutes(5))
+                    .SetAbsoluteExpiration(versionRefresh);
         }
 
         [RouteAttribute("mods/{slug}")]
@@ -119,14 +124,24 @@ namespace Accursed.Controllers
                 return new HttpStatusCodeResult((int)e.StatusCode);
             }
         }
-
         private async Task<Mod> FindMod(string slug, string requiredVersion = null)
         {
             Mod mod = await context.Mods.FirstOrDefaultAsync(x => x.Slug == slug);
 
             if (mod == null)
             {
-                mod = await fetcher.FetchMod(slug);
+                if(cache.Get(slug) != null) throw new HttpException(HttpStatusCode.NotFound);
+
+                try
+                {
+                    mod = await fetcher.FetchMod(slug);
+                }
+                catch(HttpException e)
+                {
+                    if(e.StatusCode == HttpStatusCode.NotFound) cache.Set(slug, new Object(), cacheOptions);
+                    throw e;
+                }
+
                 context.Mods.Add(mod);
                 await context.SaveChangesAsync();
             }

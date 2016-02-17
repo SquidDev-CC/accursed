@@ -45,6 +45,8 @@ namespace Accursed.Services
 
         public async Task<Mod> FetchMod(string slug)
         {
+            logger.LogInformation($"Fetching mod {slug}");
+
             var dom = await context.OpenAsync($"http://minecraft.curseforge.com/projects/{slug}/files/");
             Mod mod = new Mod()
             {
