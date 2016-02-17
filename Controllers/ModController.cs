@@ -35,9 +35,10 @@ namespace Accursed.Controllers
             this.context = context;
             this.logger = loggerFactory.CreateLogger<ModController>();
 
-            this.versionRefresh = TimeSpan.Parse(configuration["VersionRefreshTime"] ?? "00:30");
+            var configSection = configuration.GetSection("ModFetcher");
+            this.versionRefresh = TimeSpan.Parse(configSection["VersionRefresh"] ?? "00:30");
             this.cacheOptions = new MemoryCacheEntryOptions()
-                    .SetSlidingExpiration(TimeSpan.FromMinutes(5))
+                    .SetSlidingExpiration(TimeSpan.Parse(configSection["SlidingCache"] ?? "00:05"))
                     .SetAbsoluteExpiration(versionRefresh);
         }
 
@@ -149,9 +150,9 @@ namespace Accursed.Controllers
                 context.Mods.Add(mod);
                 await context.SaveChangesAsync();
             }
-            else if (mod.VersionRefresh.Add(versionRefresh) > DateTime.Now)
+            else if (mod.VersionRefresh.Add(versionRefresh) < DateTime.Now)
             {
-                logger.LogInformation("Version refresh time has expired: Refreshing");
+                logger.LogInformation($"Refreshing {mod.Name}. Last refreshed at {mod.VersionRefresh}, now is {DateTime.Now}");
 
                 var versions = await context.Versions
                     .Where(x => x.ModId == mod.Id)
@@ -182,17 +183,17 @@ namespace Accursed.Controllers
 
         public static string FormatDownload(Mod mod, uint id)
         {
-            return "http://minecraft.curseforge.com/projects/" + mod.Slug + "/files/" + id + "/download";
+            return $"http://minecraft.curseforge.com/projects/{mod.Slug}/files/{id}/download";
         }
 
         public static string FormatVersion(ModVersion version)
         {
-            return "http://minecraft.curseforge.com/projects/" + version.Mod.Slug + "/files/" + version.DownloadId;
+            return $"http://minecraft.curseforge.com/projects/{version.Mod.Slug}/files/{version.DownloadId}";
         }
 
         public static string FormatMod(Mod mod)
         {
-            return "http://minecraft.curseforge.com/projects/" + mod.Slug;
+            return $"http://minecraft.curseforge.com/projects/{mod.Slug}";
         }
     }
 }

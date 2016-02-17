@@ -35,8 +35,8 @@ gulp.task('copy:metro', function() {
 
 gulp.task('css:less', ['copy:metro'], function() {
 	return gulp.src(SRC + 'css/main.less')
-	.pipe(less({ paths: [ BOWER ] }))
-	.pipe(gulp.dest(DIST));
+		.pipe(less({ paths: [ BOWER ] }))
+		.pipe(gulp.dest(DIST));
 });
 
 
