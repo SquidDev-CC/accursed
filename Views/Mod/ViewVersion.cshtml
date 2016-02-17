@@ -39,7 +39,7 @@
 			</td>
 			<td>@file.Name</td>
 			<td><a href="@ModController.FormatDownload(Model.Mod, file.DownloadId)" title="The download through Curse">Direct download</a></td>
-			<td><a href="@Url.Action("GetFile", new { modSlug = Model.Mod.Slug, versionName = Model.Name, fileName = file.Name })" title="The download through Accursed">Proxy download</a></td>
+			<td><a href="@Url.Action("GetFile", new { modSlug = Model.Mod.Slug, versionName = Model.FancyName, fileName = file.Name })" title="The download through Accursed">Proxy download</a></td>
 		</tr>
 	}
 </table>

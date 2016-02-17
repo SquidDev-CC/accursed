@@ -53,12 +53,12 @@ namespace Accursed.Models
 
         public static Task<ModVersion> WhereNameAsync(this IQueryable<ModVersion> versions, string versionName)
         {
-            return versions.FirstAsync(x => x.Name == versionName || x.FancyName == versionName);
+            return versions.FirstOrDefaultAsync(x => x.Name == versionName || x.FancyName == versionName);
         }
 
         public static ModVersion WhereName(this IEnumerable<ModVersion> versions, string versionName)
         {
-            return versions.First(x => x.Name == versionName || x.FancyName == versionName);
+            return versions.FirstOrDefault(x => x.Name == versionName || x.FancyName == versionName);
         }
     }
 }

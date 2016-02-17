@@ -41,6 +41,9 @@ namespace Accursed
             loggerFactory.AddConsole(Configuration.GetSection("Logging"));
             loggerFactory.AddDebug();
 
+            // app.UseStatusCodePages();
+            app.UseStatusCodePagesWithReExecute("/Home/Status/{0}");
+
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
@@ -67,27 +70,6 @@ namespace Accursed
             app.UseStaticFiles();
             app.UseMvc(routes =>
             {
-                routes.MapRoute(
-                    name: "Mod",
-                    template: "mods/{slug}",
-                    defaults: new { controller = "Mod", action = "ViewMod" }
-                );
-                routes.MapRoute(
-                    name: "Version",
-                    template: "mods/{modSlug}/{versionName}",
-                    defaults: new { controller = "Mod", action = "ViewVersion" }
-                );
-                routes.MapRoute(
-                    name: "DownloadVersion",
-                    template: "mods/download/{modSlug}/{versionName}",
-                    defaults: new { controller = "Mod", action = "GetVersion" }
-                );
-                routes.MapRoute(
-                    name: "DownloadFile",
-                    template: "mods/download/{modSlug}/{versionName}/{fileName}",
-                    defaults: new { controller = "Mod", action = "GetFile" }
-                );
-
                 routes.MapRoute(name: "default", template: "{controller=Home}/{action=Index}/{id?}");
             });
         }

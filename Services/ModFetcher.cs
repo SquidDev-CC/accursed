@@ -5,6 +5,8 @@ using System.Threading.Tasks;
 using Accursed.Models;
 using AngleSharp;
 using AngleSharp.Dom;
+using AngleSharp.Network.Default;
+using AngleSharp.Network;
 using Microsoft.Extensions.Logging;
 
 namespace Accursed.Services
@@ -17,7 +19,8 @@ namespace Accursed.Services
 
         public CurseModFetcher(ILoggerFactory loggerFactory)
         {
-            config = Configuration.Default.WithDefaultLoader();
+            config = Configuration.Default
+                .WithDefaultLoader(requesters: new IRequester[] { new HttpClientRequester(), new DataRequester() });
             context = BrowsingContext.New(config);
             this.logger = loggerFactory.CreateLogger<CurseModFetcher>();
         }

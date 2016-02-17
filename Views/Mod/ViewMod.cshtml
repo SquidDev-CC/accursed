@@ -24,12 +24,12 @@
 	{
 		<tr>
 			<td>
-				<a href="@Url.Action("ViewVersion", new { modSlug = Model.Slug, versionName = version.Name})">@version.FancyName</a>
+				<a href="@Url.Action("ViewVersion", new { modSlug = Model.Slug, versionName = version.FancyName})">@version.FancyName</a>
 				<small class="text-muted">(@version.Name)</small>
 			</td>
 			<td>@version.MCVersion</td>
 			<td><a href="@ModController.FormatDownload(Model, version.DownloadId)" title="The download through Curse">Direct Download</a></td>
-			<td><a href="@Url.Action("GetVersion", new { modSlug = Model.Slug, versionName = version.Name})" title="The download through Accursed">Proxy Download</a></td>
+			<td><a href="@Url.Action("GetVersion", new { modSlug = Model.Slug, versionName = version.FancyName})" title="The download through Accursed">Proxy Download</a></td>
 		</tr>
 	}
 </table>

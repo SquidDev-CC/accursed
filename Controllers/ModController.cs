@@ -36,49 +36,88 @@ namespace Accursed.Controllers
             this.versionRefresh = TimeSpan.Parse(configuration["VersionRefreshTime"] ?? "00:30");
         }
 
+        [RouteAttribute("mods/{slug}")]
         public async Task<IActionResult> ViewMod(string slug)
         {
-            Mod mod = await FindMod(slug);
-            mod.Versions = await context.Versions
-                .Where(x => x.ModId == mod.Id)
-                .OrderByDescending(x => x.DownloadId)
-                .ToListAsync();
+            try
+            {
+                Mod mod = await FindMod(slug);
+                mod.Versions = await context.Versions
+                    .Where(x => x.ModId == mod.Id)
+                    .OrderByDescending(x => x.DownloadId)
+                    .ToListAsync();
 
-            return View(mod);
+                return View(mod);
+            }
+            catch(HttpException e)
+            {
+                return new HttpStatusCodeResult((int)e.StatusCode);
+            }
         }
 
+        [RouteAttribute("mods/{modSlug}/{versionName}")]
         public async Task<IActionResult> ViewVersion(string modSlug, string versionName)
         {
-            Mod mod = await FindMod(modSlug, versionName);
-            ModVersion version = await context.Versions
-                .Where(x => x.ModId == mod.Id)
-                .Include(x => x.Mod)
-                .Include(x => x.Files)
-                .WhereNameAsync(versionName);
+            try
+            {
+                Mod mod = await FindMod(modSlug, versionName);
+                ModVersion version = await context.Versions
+                    .Where(x => x.ModId == mod.Id)
+                    .Include(x => x.Mod)
+                    .Include(x => x.Files)
+                    .WhereNameAsync(versionName);
+                if(version == null) return new HttpNotFoundResult();
 
-            return View(version);
+                return View(version);
+            }
+            catch(HttpException e)
+            {
+                return new HttpStatusCodeResult((int)e.StatusCode);
+            }
         }
 
+        [RouteAttribute("mods/download/{modSlug}/{versionName}")]
         public async Task<IActionResult> GetVersion(string modSlug, string versionName)
         {
-            Mod mod = await FindMod(modSlug, versionName);
-            ModVersion version = await context.Versions
-                .Where(x => x.ModId == mod.Id)
-                .Include(x => x.Mod)
-                .WhereNameAsync(versionName);
+            try
+            {
+                Mod mod = await FindMod(modSlug, versionName);
+                ModVersion version = await context.Versions
+                    .Where(x => x.ModId == mod.Id)
+                    .Include(x => x.Mod)
+                    .WhereNameAsync(versionName);
 
-            return new RedirectResult(FormatDownload(mod, version.DownloadId));
+                if(version == null) return new HttpNotFoundResult();
+
+                return new RedirectResult(FormatDownload(mod, version.DownloadId));
+            }
+            catch(HttpException e)
+            {
+                return new HttpStatusCodeResult((int)e.StatusCode);
+            }
         }
 
+        [RouteAttribute("mods/download/{modSlug}/{versionName}/{fileName}")]
         public async Task<IActionResult> GetFile(string modSlug, string versionName, string fileName)
         {
-            Mod mod = await FindMod(modSlug, versionName);
-            ModVersion version = await context.Versions
-                .Where(x => x.ModId == mod.Id)
-                .WhereNameAsync(versionName);
+            try
+            {
+                Mod mod = await FindMod(modSlug, versionName);
+                ModVersion version = await context.Versions
+                    .Where(x => x.ModId == mod.Id)
+                    .WhereNameAsync(versionName);
 
-            File file = await context.Files.FirstAsync(x => x.VersionId == version.Id);
-            return new RedirectResult(FormatDownload(mod, file.DownloadId));
+                if(version == null) return new HttpNotFoundResult();
+
+                File file = await context.Files.FirstOrDefaultAsync(x => x.VersionId == version.Id);
+                if(file == null) return new HttpNotFoundResult();
+
+                return new RedirectResult(FormatDownload(mod, file.DownloadId));
+            }
+            catch(HttpException e)
+            {
+                return new HttpStatusCodeResult((int)e.StatusCode);
+            }
         }
 
         private async Task<Mod> FindMod(string slug, string requiredVersion = null)
