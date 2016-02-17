@@ -1,24 +1,45 @@
 @model ModVersion
 @using Accursed.Controllers
 @{
-	ViewData["Title"] = @Model.FancyName;
+	ViewData["Title"] = @Model.FancyName + " | " + @Model.Mod.Name;
 }
 
 <div class="page-header">
-	<h1>@ViewData["Title"]</h1>
+	<h1>
+		@Model.FancyName | <a href="@Url.Action("ViewMod", new { slug = Model.Mod.Slug})">@Model.Mod.Name</a>
+		<small><a href="@ModController.FormatVersion(Model)" target="_blank">View on Curse</a></small>
+	</h1>
 </div>
 
+<h2>Information</h2>
+<table class="table" style="max-width:200px">
+	<tr>
+		<th>Minecraft Version</th>
+		<td>@Model.MCVersion
+	</tr>
+</table>
+
+<h2>Files</h2>
 <table class="table">
 	<tr>
+		<th></th>
 		<th>Name</th>
+		<th></th>
+		<th></th>
 	</tr>
 
-    @foreach(var file in Model.Files)
-    {
-        <tr>
-            <td>
-                <a href="@ModController.FormatDownload(Model.Mod, file.DownloadId)">@file.Name</a>
-            </td>
-        </tr>
-    }
+	@foreach(var file in Model.Files)
+	{
+		<tr>
+			<td>
+				@if(file.DownloadId == Model.DownloadId)
+				{
+					<i class="fa fa-check" title="This is the default download"></i>
+				}
+			</td>
+			<td>@file.Name</td>
+			<td><a href="@ModController.FormatDownload(Model.Mod, file.DownloadId)" title="The download through Curse">Direct download</a></td>
+			<td><a href="@Url.Action("GetFile", new { modSlug = Model.Mod.Slug, versionName = Model.Name, fileName = file.Name })" title="The download through Accursed">Proxy download</a></td>
+		</tr>
+	}
 </table>

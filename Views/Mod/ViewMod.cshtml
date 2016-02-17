@@ -5,24 +5,31 @@
 }
 
 <div class="page-header">
-	<h1>@ViewData["Title"]</h1>
+	<h1>
+		@ViewData["Title"]
+		<small><a href="@ModController.FormatMod(Model)" target="_blank">View on Curse</a></small>
+	</h1>
 </div>
 
+<h2>Versions</h2>
 <table class="table">
 	<tr>
-		<th>Version</th>
+		<th>Name</th>
 		<th>Game Version</th>
+		<th></th>
+		<th></th>
 	</tr>
 
 	@foreach(var version in Model.Versions)
 	{
 		<tr>
 			<td>
-				<a href="@ModController.FormatDownload(Model, version.DownloadId)">@version.FancyName</a>
+				<a href="@Url.Action("ViewVersion", new { modSlug = Model.Slug, versionName = version.Name})">@version.FancyName</a>
+				<small class="text-muted">(@version.Name)</small>
 			</td>
-			<td>
-				@version.MCVersion
-			</td>
+			<td>@version.MCVersion</td>
+			<td><a href="@ModController.FormatDownload(Model, version.DownloadId)" title="The download through Curse">Direct Download</a></td>
+			<td><a href="@Url.Action("GetVersion", new { modSlug = Model.Slug, versionName = version.Name})" title="The download through Accursed">Proxy Download</a></td>
 		</tr>
 	}
 </table>

@@ -1,16 +1,45 @@
 @{
-	ViewData["Title"] = "Home Page";
+	ViewData["Title"] = "Accursed";
 }
 <div class="rows">
 	<div class="page-header">
-		<h1>Hello</h1>
+		<h1>Accursed</h1>
 	</div>
-	<div class="col-md-7 col-sm-12">
+	<div class="col-md-9 col-sm-12">
 		<div class="introduction">
-			<p class="lead">
-				I'm a programmer. I spend a lot of the day writing code, thinking about code, reading about code and the like.
-				That isn't to say that I don't do other things, it is just more that I love what I do.
+			<p class="lead">A maven-like server for Curse mods</p>
+			<p>
+				<a href="http://minecraft.curseforge.com/" target="_blank">Curse and CurseForge</a> are great. However,
+				some mods are only hosted on Curse - making dependency management much harder. Accursed is a solution to that.
+				It queries the Curse server for mod versions and files, and provides a simple method of downloading files.
 			</p>
 		</div>
+
+		<h2>Usage</h2>
+		<p>
+			You can view any mod's information at <code>/mods/[name]</code> and a specific version at <code>/mods/[name]/[version]</code>.
+			For a direct download, use <code>/mods/download/[name]/[version]</code> or <code>/mods/download/[name]/[version]/[file]</code>.
+		</p>
+
+		<p>
+			You can also configure Gradle to use Accursed.
+			<code>
+				<pre>
+repositories {
+	ivy {
+		pattern '@System.Net.Dns.GetHostName()/mods/download/[module]/[revision]/[artifact](-[classifier])(.[ext])'
+	}
+}
+
+dependencies {
+	compile group: 'Accursed', name: 'ComputerCraft', version: "1.78", artifact: 'ComputerCraft1.78'
+}
+				</pre>
+			</code>
+
+			You may wish to change the Ivy pattern to best suite your needs.
+			See <a href="https://docs.gradle.org/current/dsl/org.gradle.api.artifacts.repositories.IvyArtifactRepository.html" target="_blank">Gradle's documentation</a> for more information.
+		</p>
+
 	</div>
 </div>

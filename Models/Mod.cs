@@ -46,6 +46,11 @@ namespace Accursed.Models
 
     public static class Extensions
     {
+        public static bool HasName(this ModVersion version, string versionName)
+        {
+            return version.Name == versionName || version.FancyName == versionName;
+        }
+
         public static Task<ModVersion> WhereNameAsync(this IQueryable<ModVersion> versions, string versionName)
         {
             return versions.FirstAsync(x => x.Name == versionName || x.FancyName == versionName);

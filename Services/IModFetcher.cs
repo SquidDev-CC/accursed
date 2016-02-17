@@ -8,7 +8,5 @@ namespace Accursed.Services
         Task<Mod> FetchMod(string slug);
 
         Task RefreshVersions(Mod mod);
-
-        Task PopulateVersionFiles(ModVersion version);
     }
 }

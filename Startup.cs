@@ -28,6 +28,7 @@ namespace Accursed
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddCaching();
             services.AddEntityFramework().AddSqlite().AddDbContext<AccursedDbContext>();
             services.AddMvc();
             services.AddTransient<IModFetcher, CurseModFetcher>();
@@ -77,12 +78,17 @@ namespace Accursed
                     defaults: new { controller = "Mod", action = "ViewVersion" }
                 );
                 routes.MapRoute(
-                    name: "Index",
-                    template: "",
-                    defaults: new { controller = "Home", action = "Index" }
+                    name: "DownloadVersion",
+                    template: "mods/download/{modSlug}/{versionName}",
+                    defaults: new { controller = "Mod", action = "GetVersion" }
+                );
+                routes.MapRoute(
+                    name: "DownloadFile",
+                    template: "mods/download/{modSlug}/{versionName}/{fileName}",
+                    defaults: new { controller = "Mod", action = "GetFile" }
                 );
 
-                // routes.MapRoute(name: "default", template: "{controller=Home}/{action=Index}/{id?}");
+                routes.MapRoute(name: "default", template: "{controller=Home}/{action=Index}/{id?}");
             });
         }
 

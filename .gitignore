@@ -207,3 +207,4 @@ FakesAssemblies/
 
 # Custom
 wwwroot/static
+*.db
