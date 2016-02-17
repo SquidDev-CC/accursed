@@ -7,8 +7,8 @@ using Accursed.Models;
 namespace Accursed.Migrations
 {
     [DbContext(typeof(AccursedDbContext))]
-    [Migration("20160216184052_InitialMod")]
-    partial class InitialMod
+    [Migration("20160217153513_FileNormalisation")]
+    partial class FileNormalisation
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -23,6 +23,8 @@ namespace Accursed.Migrations
                     b.Property<uint>("DownloadId");
 
                     b.Property<string>("Name");
+
+                    b.Property<string>("NormalisedName");
 
                     b.Property<int>("VersionId");
 

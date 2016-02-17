@@ -98,7 +98,7 @@ namespace Accursed.Services
 
             // execute the request
             var responseMessage = await _client.SendAsync(requestMessage, cancel).ConfigureAwait(false);
-            if(!responseMessage.IsSuccessStatusCode)
+            if (!responseMessage.IsSuccessStatusCode)
             {
                 responseMessage.Dispose();
                 throw new HttpException(responseMessage.StatusCode);

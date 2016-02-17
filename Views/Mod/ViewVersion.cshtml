@@ -37,7 +37,7 @@
 					<i class="fa fa-check" title="This is the default download"></i>
 				}
 			</td>
-			<td>@file.Name</td>
+			<td>@file.NormalisedName <small class="text-muted">(@file.Name)</small></td>
 			<td><a href="@ModController.FormatDownload(Model.Mod, file.DownloadId)" title="The download through Curse">Direct download</a></td>
 			<td><a href="@Url.Action("GetFile", new { modSlug = Model.Mod.Slug, versionName = Model.FancyName, fileName = file.Name })" title="The download through Accursed">Proxy download</a></td>
 		</tr>

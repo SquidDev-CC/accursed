@@ -16,23 +16,35 @@
 		</div>
 
 		<h2>Usage</h2>
+		<h3>Online</h3>
 		<p>
 			You can view any mod's information at <code>/mods/[name]</code> and a specific version at <code>/mods/[name]/[version]</code>.
 			For a direct download, use <code>/mods/download/[name]/[version]</code> or <code>/mods/download/[name]/[version]/[file]</code>.
 		</p>
 
 		<p>
+			Accursed tries to normalise version and file names. For instance:
+			<ul>
+				<li>Version <code>CCTweaks-1.7.10-0.2.jar</code> becomes <code>1.7.10-0.2</code></li>
+				<li>File <code>ComputerCraft1.78.jar</code> becomes <code>ComputerCraft-1.78.jar</code></li>
+			</ul>
+
+			You can use both normalised and original version names when downloading.
+		</p>
+
+		<h3>Gradle</h3>
+		<p>
 			You can also configure Gradle to use Accursed.
 			<code>
 				<pre>
 repositories {
 	ivy {
-		pattern '@System.Net.Dns.GetHostName()/mods/download/[module]/[revision]/[artifact](-[classifier])(.[ext])'
+		pattern 'http://46.101.4.196/mods/download/[module]/[revision]/[module]-[revision](-[classifier])(.[ext])'
 	}
 }
 
 dependencies {
-	compile group: 'Accursed', name: 'ComputerCraft', version: "1.78", artifact: 'ComputerCraft1.78'
+	compile 'accursed:ComputerCraft:1.78'
 }
 				</pre>
 			</code>

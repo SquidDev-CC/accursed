@@ -27,14 +27,32 @@ namespace Accursed.Services
 
         public string VersionName(string name, string version)
         {
-            version = version.Trim();
+            return version
+                .Trim()
+                .StripEnd(".jar").StripEnd(".zip") // File extensions
+                .StripStart(name) // Most prefix with name
+                .Trim(' ', '-'); // Most have space or hyphen
+        }
 
-            if (version.EndsWith(".zip")) version = version.Substring(0, version.Length - 4);
-            if (version.EndsWith(".jar")) version = version.Substring(0, version.Length - 4);
+        public string FileName(ModVersion version, string file)
+        {
+            string suffix = file
+                .Trim()
+                .StripStart(version.Mod.Name)
+                .Trim(' ', '-')
+                .StripStart(version.FancyName)
+                .Trim(' ', '-');
 
-            if (name.StartsWith(name)) version = version.Substring(name.Length);
+            string prefix = version.Mod.Name + "-" + version.FancyName;
 
-            return version.TrimStart(' ', '-');
+            if (suffix.Length == 0 || !Char.IsLetterOrDigit(suffix[0]))
+            {
+                return prefix + suffix;
+            }
+            else
+            {
+                return prefix + "-" + suffix;
+            }
         }
 
         public uint ExtractId(string url)
@@ -45,6 +63,7 @@ namespace Accursed.Services
 
         public async Task<Mod> FetchMod(string slug)
         {
+            slug = slug.ToLowerInvariant();
             logger.LogInformation($"Fetching mod {slug}");
 
             var dom = await context.OpenAsync($"http://minecraft.curseforge.com/projects/{slug}/files/");
@@ -66,30 +85,35 @@ namespace Accursed.Services
             logger.LogInformation($"Populating files for {version.Name}");
             var dom = await context.OpenAsync($"http://minecraft.curseforge.com/projects/{version.Mod.Slug}/files/{version.DownloadId}");
 
-            var name = dom
-                .QuerySelectorAll("li div.info-label")
-                .First(x => x.TextContent.Contains("Filename"))
-                .ParentElement
-                .QuerySelector("div.info-data")
-                .TextContent
-                .Trim();
-
-            version.Files.Add(new File()
             {
-                DownloadId = version.DownloadId,
-                Name = name,
-                Version = version,
-            });
+                var name = dom
+                    .QuerySelectorAll("li div.info-label")
+                    .First(x => x.TextContent.Contains("Filename"))
+                    .ParentElement
+                    .QuerySelector("div.info-data")
+                    .TextContent
+                    .Trim();
+
+                version.Files.Add(new File()
+                {
+                    DownloadId = version.DownloadId,
+                    Name = name,
+                    NormalisedName = FileName(version, name),
+                    Version = version,
+                });
+            }
 
             foreach (IElement element in dom.QuerySelectorAll("section.details-additional-files tr.project-file-list-item"))
             {
                 var node = element.QuerySelector("div.project-file-name-container a.overflow-tip");
                 var id = ExtractId(node.Attributes["href"].Value);
+                var name = node.TextContent.Trim();
 
                 version.Files.Add(new File()
                 {
                     DownloadId = id,
-                    Name = node.TextContent.Trim(),
+                    Name = name,
+                    NormalisedName = FileName(version, name),
                     Version = version,
                 });
             }
@@ -97,6 +121,7 @@ namespace Accursed.Services
 
         public async Task RefreshVersions(Mod mod)
         {
+            logger.LogInformation($"Updating versions for {mod.Name}");
             var dom = await context.OpenAsync($"http://minecraft.curseforge.com/projects/{mod.Slug}/files/");
             await RefreshVersions(mod, dom);
         }
@@ -106,7 +131,6 @@ namespace Accursed.Services
             mod.VersionRefresh = DateTime.Now;
 
             var versions = mod.Versions.ToDictionary(x => x.DownloadId, x => x);
-            logger.LogInformation($"Updating versions for {mod.Name}");
 
             return Task.WhenAll(dom.QuerySelectorAll("tr.project-file-list-item").Select(async element =>
             {

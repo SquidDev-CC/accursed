@@ -54,7 +54,7 @@ namespace Accursed.Controllers
 
                 return View(mod);
             }
-            catch(HttpException e)
+            catch (HttpException e)
             {
                 return new HttpStatusCodeResult((int)e.StatusCode);
             }
@@ -71,11 +71,11 @@ namespace Accursed.Controllers
                     .Include(x => x.Mod)
                     .Include(x => x.Files)
                     .WhereNameAsync(versionName);
-                if(version == null) return new HttpNotFoundResult();
+                if (version == null) return new HttpNotFoundResult();
 
                 return View(version);
             }
-            catch(HttpException e)
+            catch (HttpException e)
             {
                 return new HttpStatusCodeResult((int)e.StatusCode);
             }
@@ -92,11 +92,11 @@ namespace Accursed.Controllers
                     .Include(x => x.Mod)
                     .WhereNameAsync(versionName);
 
-                if(version == null) return new HttpNotFoundResult();
+                if (version == null) return new HttpNotFoundResult();
 
                 return new RedirectResult(FormatDownload(mod, version.DownloadId));
             }
-            catch(HttpException e)
+            catch (HttpException e)
             {
                 return new HttpStatusCodeResult((int)e.StatusCode);
             }
@@ -112,33 +112,37 @@ namespace Accursed.Controllers
                     .Where(x => x.ModId == mod.Id)
                     .WhereNameAsync(versionName);
 
-                if(version == null) return new HttpNotFoundResult();
+                if (version == null) return new HttpNotFoundResult();
 
-                File file = await context.Files.FirstOrDefaultAsync(x => x.VersionId == version.Id);
-                if(file == null) return new HttpNotFoundResult();
+                File file = await context.Files
+                    .Where(x => x.VersionId == version.Id)
+                    .Where(x => x.Name == fileName || x.NormalisedName == fileName)
+                    .FirstOrDefaultAsync();
+                if (file == null) return new HttpNotFoundResult();
 
                 return new RedirectResult(FormatDownload(mod, file.DownloadId));
             }
-            catch(HttpException e)
+            catch (HttpException e)
             {
                 return new HttpStatusCodeResult((int)e.StatusCode);
             }
         }
         private async Task<Mod> FindMod(string slug, string requiredVersion = null)
         {
+            slug = slug.ToLowerInvariant();
             Mod mod = await context.Mods.FirstOrDefaultAsync(x => x.Slug == slug);
 
             if (mod == null)
             {
-                if(cache.Get(slug) != null) throw new HttpException(HttpStatusCode.NotFound);
+                if (cache.Get(slug) != null) throw new HttpException(HttpStatusCode.NotFound);
 
                 try
                 {
                     mod = await fetcher.FetchMod(slug);
                 }
-                catch(HttpException e)
+                catch (HttpException e)
                 {
-                    if(e.StatusCode == HttpStatusCode.NotFound) cache.Set(slug, new Object(), cacheOptions);
+                    if (e.StatusCode == HttpStatusCode.NotFound) cache.Set(slug, new Object(), cacheOptions);
                     throw e;
                 }
 
@@ -170,7 +174,7 @@ namespace Accursed.Controllers
                 await fetcher.RefreshVersions(mod);
                 await context.SaveChangesAsync();
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 logger.LogError("Fetching version " + mod, e);
             }
